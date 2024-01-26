@@ -1,25 +1,61 @@
 <script>
+import AppHeader from './components/AppHeader.vue';
+import AppMain from './components/AppMain.vue';
+import AppFooter from './components/AppFooter.vue';
+import LoadingScreen from './components/LoadingScreen.vue'
+import axios from 'axios';
+import { store } from './store.js';
+
 export default {
     data() {
-      return { count: 0 }
+        return {
+            store,
+            loading: true
+        };
     },
-};
+    components: {
+        AppHeader,
+        AppMain,
+        AppFooter,
+        LoadingScreen
+    },  
+    methods: {
+
+    },
+    mounted(){
+        axios.get(this.store.baseUrl)
+        .then((response)=>{
+            // console.log('Dati Carte:',response);
+            this.store.cards = response.data.data;
+            // console.log('Dati Carte:',this.store.cards);
+            
+        })
+        .finally(()=>{
+            this.loading = false;
+        });
+
+        axios.get(this.store.urlArc)
+        .then((response)=>{
+            console.log('Archetipi Carte:',response);
+            this.store.archetypes = response.data;
+            console.log('Archetipi Carte:',this.store.archetypes);
+            
+        });
+    },
+}
 </script>
 
 <template>
-  <div>
-    <h1>
-      Template Vite
-    </h1>
-    <p>
-      {{count}}
-    </p>
-    <button @click="count++">
-      Incrementa counter
-    </button>
-  </div>
+
+    <LoadingScreen v-if="loading"/>
+
+    <AppHeader v-if="loading == false" />
+
+    <AppMain v-if="loading == false" />
+
 </template>
 
-<style scoped>
-  /* STILE CSS CON SCOPE A QUESTO FILE */
+<style lang="scss">
+@use "assets/scss/partials/reset" as *;
+@use "assets/scss/main" as *;
 </style>
